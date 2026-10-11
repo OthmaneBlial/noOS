@@ -9,6 +9,7 @@ kernel_main:
     call heap_init
     call heap_selftest
     call paging_init
+    call user_init
     call initrd_init
     call nofs_init
     call keyboard_init

@@ -56,6 +56,7 @@ halts the guest CPU, while `reboot` restarts the guest.
 | `ls`, `cat FILE`, `pwd`, `cd DIR` | Writable noFS root and read-only `/initrd` mount |
 | `mkdir NAME`, `touch NAME`, `write FILE [TEXT]`, `rm NAME` | Real IDE disk files; write replaces contents; rm accepts empty directories |
 | `ps`, `tasks on\|off` | Ring-0 task states, work/switch/tick counters and PIT-preempted workers |
+| `user demo\|fault\|write\|stack\|io\|spin` | Real ring-3 execution, checked syscalls and recoverable protection faults |
 | `reboot`, `halt` | Hardware reset or interrupt-disabled CPU halt |
 | `panic [page\|gp\|divide]` | Real CPU fault with vector, error code, EIP and CR2 when applicable |
 
@@ -64,7 +65,7 @@ Home, End, Delete and Backspace work. Escape clears the draft. Tab inserts a
 space. Input is limited to 127 characters, using a basic US keyboard layout.
 
 <!-- progress:start -->
-## Roadmap — 95%
+## Roadmap — 97.5%
 
 Progress counts verified gates, including the advanced roadmap. Planned work earns no credit.
 
@@ -76,7 +77,7 @@ Progress counts verified gates, including the advanced roadmap. Planned work ear
 | 4. Interactive shell | 5/5 |
 | 5. Memory management | 5/5 |
 | 6. Hardware and diagnostics | 5/5 |
-| 7. Advanced kernel | 3/5 |
+| 7. Advanced kernel | 4/5 |
 | 8. Professional delivery | 5/5 |
 <!-- progress:end -->
 
@@ -182,9 +183,11 @@ and mapping live stacks and hardware before enabling CR0.PG. Tests exercise
 these boundaries instead of treating successful assembly as a boot proof.
 
 Cooperative switching and PIT-driven preemption with separate stacks are tested.
-Ring 3, syscalls and ELF executables are still pending.
-There is no userspace isolation or physical-hardware compatibility
-claim. Contributions should start with a reproducible failure or a scoped
+Ring 3 uses a TSS, private page directory, read-only code, a guarded stack and
+checked INT 80h syscalls. Protection faults terminate the user process and
+return to the shell. One synchronous user process is supported; concurrent
+user scheduling and ELF loading are pending. Physical-hardware compatibility
+is unverified. Contributions should start with a reproducible failure or a scoped
 roadmap gate; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License

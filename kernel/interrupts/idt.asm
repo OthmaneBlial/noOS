@@ -12,6 +12,7 @@ idt_init:
     mov [edi+6], ax
     add edi, 8
     loop .gate
+    mov byte [idt+128*8+5], 0xee ; INT 80h callable from CPL3
     lidt [idtr]
     popad
     ret

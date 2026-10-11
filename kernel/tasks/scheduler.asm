@@ -16,22 +16,26 @@ task_prepare:
     mov edi, ebx
     shl edi, 12
     add edi, task_stacks
-    sub edi, 52               ; PUSHAD + vector/error + ring-0 CPU IRET frame
+    sub edi, 68               ; segments + PUSHAD + vector/error + ring-0 IRET frame
     mov [task_blocks+ebp], edi
     mov dword [task_blocks+ebp+4], 1
     mov dword [task_blocks+ebp+8], 0
     mov dword [task_blocks+ebp+12], 0
     mov dword [task_blocks+ebp+16], 0
-    mov ecx, 13
+    mov ecx, 17
     xor eax, eax
     push edi
     rep stosd
     pop edi
-    mov [edi+28], ebx
-    mov dword [edi+32], 48
-    mov dword [edi+40], task_worker
-    mov dword [edi+44], 0x08
-    mov dword [edi+48], 0x202
+    mov dword [edi], 0x10
+    mov dword [edi+4], 0x10
+    mov dword [edi+8], 0x10
+    mov dword [edi+12], 0x10
+    mov [edi+44], ebx
+    mov dword [edi+48], 48
+    mov dword [edi+56], task_worker
+    mov dword [edi+60], 0x08
+    mov dword [edi+64], 0x202
     inc ebx
     cmp ebx, TASK_COUNT
     jb .worker

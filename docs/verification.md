@@ -59,9 +59,16 @@ new process against the same volume. They verify replacement, directories,
 deletion, full-table exhaustion/reuse, read-only mounts, bad data checksums,
 one-bank recovery and six structurally invalid volumes with valid checksums.
 Invalid volumes remain byte-identical after attempted writes. Power-loss timing
-at every write is not yet exhaustively tested. Userspace isolation remains pending.
+at every write is not yet exhaustively tested.
 
 Task tests first check cooperative register restoration and worker completion,
 then enable two non-yielding workers. Both real work/switch/IRQ-tick counters
 advance across `ps` calls while PS/2 commands remain responsive. Stopping workers
 returns both to DONE. The quantum is two actual PIT interrupts.
+
+User tests inspect paused QEMU CPU state for CPL3, CS=1bh, TR=28h, private CR3,
+user/read-only code PTE, writable stack and absent guard page. They execute
+write/ticks/exit and unknown syscalls, reject a kernel pointer, and trigger real
+kernel-read, code-write, stack-guard and port-I/O protection faults. Every fault
+returns to a responsive shell; repeated executions restore the original frame
+count. Kernel workers resume after a user process returns.

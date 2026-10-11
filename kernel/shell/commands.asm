@@ -103,7 +103,7 @@ command_panic:
     mov eax, [0]
     ret
 .gp:
-    mov ax, 0x18
+    mov ax, 0x30              ; outside the runtime kernel/user/TSS GDT
     mov ds, ax
     ret
 .divide:
@@ -268,6 +268,7 @@ command_table:
     dd rm_name, command_rm, 1, rm_help
     dd ps_name, command_ps, 0, ps_name
     dd tasks_name, command_tasks, 1, tasks_help
+    dd user_name, command_user, 1, user_help
     dd 0,0,0,0
 help_name db 'help',0
 clear_name db 'clear',0
@@ -301,6 +302,8 @@ rm_name db 'rm',0
 ps_name db 'ps',0
 tasks_name db 'tasks',0
 tasks_help db 'tasks on|off (PIT-preempted workers)',0
+user_name db 'user',0
+user_help db 'user demo|fault|write|stack|io|spin (ring 3)',0
 mkdir_help db 'mkdir NAME',0
 touch_help db 'touch NAME',0
 write_help db 'write FILE [TEXT] (replace)',0

@@ -29,7 +29,7 @@ with Machine() as machine:
     machine.shell("panic page", "KERNEL PANIC: exception 14 error=0x00000000")
     machine.wait("CR2=0x00000000")
 
-for command, vector, error in [("panic gp", 13, 0x18), ("panic divide", 0, 0)]:
+for command, vector, error in [("panic gp", 13, 0x30), ("panic divide", 0, 0)]:
     with Machine() as machine:
         machine.wait("noOS> ")
         machine.shell(command, f"exception {vector} error=0x{error:08X}")

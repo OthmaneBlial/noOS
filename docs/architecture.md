@@ -53,7 +53,7 @@ after `org 0x10000`; a listing byte offset must add 10000h for a guest address.
 | `drivers/vga.asm` | 80x25, 80-column rows; output preserves registers; console mirrors to COM1 |
 | `lib/conversion.asm` | EAX unsigned32 or EDX:EAX unsigned64; output preserves registers |
 | `lib/string.asm` | ESI/EDI strings; compare/length return EAX; copies require caller-proven capacity |
-| `interrupts/idt.asm`, `isr.asm` | 256 ring-0 interrupt gates; CPU error code normalized beneath vector |
+| `interrupts/idt.asm`, `isr.asm` | 256 interrupt gates; only INT 80h is DPL3; normalized CPU error/vector |
 | `interrupts/pic.asm`, `irq.asm` | PIC bases 20h/28h; EOI and IRQ7/15 spurious handling |
 | `drivers/keyboard.asm` | IRQ1 produces a 128-slot SPSC ring (127 usable events); consumer returns EAX/0 |
 | `drivers/timer.asm` | IRQ0 maintains 64-bit ticks/seconds; ECX=ticks for interrupt-aware delay |
@@ -64,7 +64,8 @@ after `org 0x10000`; a listing byte offset must add 10000h for a guest address.
 | `shell/` | Main-context command execution only; table entries contain name/function/argument rule/help |
 | `fs/initrd.asm` | Validated NIRD header/40-byte entries; file reads bounded by real embedded size |
 
-IRQ entry uses PUSHAD, clears DF, invokes a handler, restores registers and
+IRQ entry saves general and segment registers, clears DF, loads kernel data
+selectors, invokes a handler, restores registers and
 IRETD. Handlers do not print, allocate or invoke the shell. Keyboard consumption
 masks interrupts and restores original flags; idle uses CLI/check followed by
 STI/HLT so a pending key cannot be lost before sleep. Memory managers are
@@ -87,8 +88,9 @@ It is a fixed reserved arena, not a growing virtual allocator.
 Paging is supervisor-only identity mapping of the managed 128 MiB window,
 excluding address zero. Page tables are live allocated frames. PG and WP are
 enabled only after checking kernel, stack, map, heap and VGA pages. Kernel code
-and data currently share writable supervisor mappings; this is not userspace
-isolation. Large pages, PAE, SMP, APIC, UEFI and long mode are not implemented.
+and data share writable supervisor mappings. User address spaces retain those
+supervisor mappings and add a separate user PDE. Large pages, PAE, SMP, APIC,
+UEFI and long mode are not implemented.
 
 ## References
 
@@ -137,12 +139,41 @@ through IRETD. Worker termination clears its ready bit before yielding.
 
 The boot test runs two independent workers to completion and checks counters,
 register preservation and return to the shell. `ps` reports the real blocks.
-This is kernel threading; there is no user privilege or address-space isolation.
+These three tasks are kernel threads sharing one address space.
 After cooperative switching passes, a second boot check runs non-yielding
 workers with a two-tick PIT quantum. IRQ0 updates time and acknowledges the PIC
 before scheduling at the saved interrupt-frame boundary. `tasks on` starts the
 workers; `tasks off` stops them without stopping the shell. Tests verify both
 work counters, switches and IRQ ticks advance while keyboard commands execute.
+
+## Ring 3 and syscall ABI
+
+The runtime GDT keeps kernel selectors 08h/10h and adds user code/data 1bh/23h
+and TSS 28h. The 104-byte TSS sets SS0/ESP0 to a dedicated 8 KiB trap stack;
+its absent I/O bitmap and user IOPL=0 deny port I/O. IRETD enters ring 3 with
+IF set. Each execution allocates a private page directory/table, code and stack
+frames. User mappings start at 40000000h, outside the 128 MiB kernel identity
+window. The stack is at 4001f000h with an unmapped page below it. Code is user
+read-only. Kernel pages remain supervisor-only; PG and WP stay enabled.
+
+The saved frame offsets are GS/FS/ES/DS at 0/4/8/12, PUSHAD at 16–44,
+vector/error at 48/52, EIP/CS/EFLAGS at 56/60/64 and user ESP/SS at 68/72.
+INT 80h has DPL3; all other gates are DPL0. EAX selects a syscall:
+
+| ID | Arguments | Result |
+| --- | --- | --- |
+| 1 write | EBX=user pointer, ECX=length <=1024 | byte count or -14 |
+| 2 exit | EBX=status | returns to suspended kernel caller |
+| 3 ticks | none | low 32 bits of actual PIT ticks |
+| unknown | none | -38 |
+
+Write checks overflow, user bounds and every covered PTE before dereferencing
+any byte. Exceptions from saved CPL3 terminate only that user execution.
+Return restores kernel CR3, segments, stack, flags and scheduler state before
+freeing all owned frames. One user process executes synchronously; kernel-worker
+preemption is suspended during it, while PIT/keyboard interrupts continue.
+There is no concurrent user scheduling or FPU context switching. `user` runs
+an embedded Assembly test program; an ELF loader is the next gate.
 
 - [Intel system programming manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 - [QEMU system invocation](https://www.qemu.org/docs/master/system/qemu-manpage.html)

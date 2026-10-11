@@ -11,7 +11,18 @@ isr_%+vector:
 isr_common:
     cld
     pushad
-    mov eax, [esp+32]
+    push ds
+    push es
+    push fs
+    push gs
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov eax, [esp+48]
+    cmp eax, 128
+    je syscall_dispatch
     cmp eax, 48
     je task_schedule
     cmp eax, 32
@@ -19,7 +30,7 @@ isr_common:
     cmp eax, 47
     ja isr_exception
     call irq_dispatch
-    cmp dword [esp+32], 32
+    cmp dword [esp+48], 32
     jne isr_restore
     cmp byte [task_preempt], 1
     jne isr_restore
@@ -30,12 +41,18 @@ isr_common:
     cmp dword [task_quantum], 2
     jae task_schedule         ; IRQ dispatcher already acknowledged the PIC
 isr_restore:
+    pop gs
+    pop fs
+    pop es
+    pop ds
     popad
     add esp, 8
     iretd
 isr_exception:
-    mov ebx, [esp+36]
-    mov edx, [esp+40]
+    mov ebx, [esp+52]
+    mov edx, [esp+56]
+    test byte [esp+60], 3
+    jnz user_fault
     jmp panic_exception
 isr_table:
 %assign vector 0
