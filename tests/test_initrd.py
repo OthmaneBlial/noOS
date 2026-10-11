@@ -6,15 +6,16 @@ from qemu import Machine, ROOT
 with Machine() as machine:
     machine.wait("noOS> ")
     assert "Validated read-only initrd" in machine.output()
+    machine.shell("cd /initrd")
     output = machine.shell("ls", "manual.txt")
     assert "hello.txt" in output and "Read-only initrd /" in output
     machine.shell("cat hello.txt", "read by the Assembly kernel.")
     machine.shell("cat manual.txt", "actual emulated disk I/O.")
     machine.shell("cat missing", "File not found")
     machine.shell("cat", "Usage: cat FILE")
-    machine.shell("pwd", "/\n")
+    machine.shell("pwd", "/initrd\n")
     machine.shell("cd /")
-    machine.shell("cd missing", "Usage: cd /")
+    machine.shell("cd missing", "not found")
 
 raw = (ROOT / "build/noos.img").read_bytes()
 initrd = (ROOT / "build/initrd.bin").read_bytes()

@@ -6,7 +6,7 @@ sysinfo   show actual CPU, E820 memory, IRQ and PIT data
 ls        list the read-only initrd
 cat FILE  read a file by its validated name and size
 pwd       show the current directory
-cd /      the initrd currently has one root directory
+cd /initrd  visit the read-only boot-image filesystem
 
 The initrd is embedded in the disk image. It is read-only and does not provide
 writable persistence. Future storage work must use actual emulated disk I/O.

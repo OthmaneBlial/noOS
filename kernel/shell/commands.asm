@@ -262,6 +262,10 @@ command_table:
     dd cat_name, command_cat, 1, cat_help
     dd pwd_name, command_pwd, 0, pwd_name
     dd cd_name, command_cd, 1, cd_help
+    dd mkdir_name, command_mkdir, 1, mkdir_help
+    dd touch_name, command_touch, 1, touch_help
+    dd write_name, command_write, 1, write_help
+    dd rm_name, command_rm, 1, rm_help
     dd 0,0,0,0
 help_name db 'help',0
 clear_name db 'clear',0
@@ -287,7 +291,15 @@ cat_name db 'cat',0
 pwd_name db 'pwd',0
 cd_name db 'cd',0
 cat_help db 'cat FILE',0
-cd_help db 'cd /',0
+cd_help db 'cd DIR (/, /initrd, .. or child name)',0
+mkdir_name db 'mkdir',0
+touch_name db 'touch',0
+write_name db 'write',0
+rm_name db 'rm',0
+mkdir_help db 'mkdir NAME',0
+touch_help db 'touch NAME',0
+write_help db 'write FILE [TEXT] (replace)',0
+rm_help db 'rm NAME (file or empty directory)',0
 cpu_vendor_label db 'CPU vendor: ',0
 cpu_family_label db 'Family: ',0
 cpu_model_label db ' Model: ',0

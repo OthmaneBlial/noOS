@@ -6,20 +6,27 @@ import socket
 import subprocess
 import tempfile
 import time
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from data_image import empty_volume
 
 
 class Machine:
-    def __init__(self, memory="128M", image=None, extra=()):
+    def __init__(self, memory="128M", image=None, extra=(), data_disk=None):
         self.tmp = tempfile.TemporaryDirectory()
         self.directory = pathlib.Path(self.tmp.name)
         self.serial = self.directory / "serial.log"
         self.debug = self.directory / "boot.log"
         self.events = []
+        if data_disk is None:
+            data_disk = self.directory / "data.img"
+            data_disk.write_bytes(empty_volume())
         self.process = subprocess.Popen([
             os.environ.get("QEMU", "qemu-system-i386"), "-machine", "pc",
             "-m", memory, "-drive", f"format=raw,file={image or ROOT / 'build/noos.img'}",
+            "-drive", f"format=raw,file={data_disk},if=ide,index=1",
             "-display", "none", "-serial", f"file:{self.serial}",
             "-debugcon", f"file:{self.debug}", "-no-shutdown",
             "-qmp", f"unix:{self.directory / 'qmp'},server=on,wait=off", *extra,

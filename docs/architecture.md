@@ -100,6 +100,32 @@ overflow, overlap, duplicate names and unsupported paths before use. `ls`,
 `cat`, `pwd` and `cd /` operate on this flat root. This is read-only image
 content, not writable disk persistence.
 
+## Persistent noFS
+
+The primary IDE slave is a separate 1024-sector volume. ATA IDENTIFY requires
+LBA support and adequate size. Bounded PIO reads/writes use ports 1f0h–1f7h,
+slave selection and a 400 ns alternate-status delay. No operation addresses
+the boot master. `data/noos-data.img` survives clean builds.
+
+Two metadata banks occupy LBAs 0–4 and 5–9. Each has a versioned header,
+generation, full-metadata FNV-1a checksum and 32 fixed 64-byte entries. Entries
+validate type, parent chains, name/duplicates, mount collisions, size and data
+bank. Directories are bounded to three levels. Bad metadata leaves media
+untouched; one valid bank can mount even when the other is corrupt.
+
+File slot N uses LBAs `16 + N*16 + bank*8`, with two 4 KiB data banks. Write
+fills/flushed the inactive data bank, then writes/flushed inactive metadata
+entries, and finally writes/flushed its header as a commit record. Each file
+has a data checksum, verified before printing. Failure before metadata commit
+leaves the active reference intact; uncertain metadata I/O disables writes
+until reboot/remount. This is a small experimental filesystem, not a universal
+crash-consistency guarantee or secure erase implementation.
+
+`mkdir`, `touch`, `write` and `rm` act in the current noFS directory. Names
+contain 1–31 printable ASCII characters without whitespace/slash. `write`
+replaces an existing file with remaining line text. `rm` refuses nonempty
+directories. `/initrd` remains read-only and does not consume a noFS slot.
+
 - [Intel system programming manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 - [QEMU system invocation](https://www.qemu.org/docs/master/system/qemu-manpage.html)
 - [QMP reference](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html)

@@ -24,7 +24,7 @@ serial/debug logs, inspects emulated physical memory and invokes GNU GDB.
 | Reboot/halt | New kernel boot after reset; HLT=1 and no keyboard output after halt |
 | Usable QEMU/GDB | Actual GNU GDB breakpoint, register checks and instruction inspection |
 | Accurate README | Roadmap sync gate and explicit limits; reviewed against modules |
-| Automated subsystems | Nine focused hardware suites, assembly self-checks and CI |
+| Automated subsystems | Ten focused hardware suites, assembly self-checks and CI |
 | Entire runtime Assembly | All boot/kernel sources NASM; no high-level runtime linked |
 
 ## Additional checks
@@ -54,5 +54,9 @@ for every buggy BIOS. Exception output assumes a usable kernel stack and
 UART/VGA mapping; there is no alternate double-fault stack yet. Time accounting
 uses the PIT nominal oscillator.
 
-No test proves persistent storage or userspace isolation because those features
-are pending. The roadmap keeps them unverified.
+Persistent storage tests inspect actual raw IDE sectors, close QEMU and boot a
+new process against the same volume. They verify replacement, directories,
+deletion, full-table exhaustion/reuse, read-only mounts, bad data checksums,
+one-bank recovery and six structurally invalid volumes with valid checksums.
+Invalid volumes remain byte-identical after attempted writes. Power-loss timing
+at every write is not yet exhaustively tested. Userspace isolation remains pending.

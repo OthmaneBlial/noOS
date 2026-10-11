@@ -84,7 +84,7 @@ initrd_find:
     pop edi
     pop ecx
     ret
-command_ls:
+initrd_ls:
     mov esi, initrd_heading
     call console_puts
     mov ebp, initrd_start+16
@@ -101,7 +101,7 @@ command_ls:
     add ebp, 40
     loop .file
     ret
-command_cat:
+initrd_cat:
     cmp byte [esi], 0
     je .usage
     call initrd_find
@@ -124,27 +124,12 @@ command_cat:
 .missing:
     mov esi, file_missing
     jmp console_puts
-command_pwd:
-    mov esi, root_path
-    jmp console_puts
-command_cd:
-    mov edi, root_name
-    call string_equal
-    test eax, eax
-    jz .missing
-    ret
-.missing:
-    mov esi, directory_missing
-    jmp console_puts
 initrd_ok db '[FS] Validated read-only initrd',10,0
 initrd_bad db '[FS ERROR] Invalid initrd metadata',10,0
-initrd_heading db 'Read-only initrd /',10,0
+initrd_heading db 'Read-only initrd /initrd',10,0
 initrd_bytes db ' bytes',10,0
 cat_usage db 'Usage: cat FILE',10,0
 file_missing db 'File not found in read-only initrd.',10,0
-directory_missing db 'Usage: cd / (read-only initrd has one root directory)',10,0
-root_name db '/',0
-root_path db '/',10,0
 align 4
 initrd_start:
     incbin "build/initrd.bin"
