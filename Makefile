@@ -35,6 +35,7 @@ test: all
 	$(PYTHON) tests/test_vga.py
 	$(PYTHON) tests/test_keyboard.py
 	$(PYTHON) tests/test_shell.py
+	$(PYTHON) tests/test_memory.py
 
 size: all
 	$(PYTHON) tools/image.py size

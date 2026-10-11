@@ -37,6 +37,32 @@ print_newline:
     call console_putc
     pop eax
     ret
-number_buffer times 12 db 0
+; EDX:EAX=64-bit unsigned integer. Preserve all registers.
+print_u64:
+    pushad
+    mov ebp, eax
+    mov ecx, edx
+    mov edi, number_buffer+31
+    mov byte [edi], 0
+    mov ebx, 10
+.digit64:
+    mov eax, ecx
+    xor edx, edx
+    div ebx
+    mov ecx, eax
+    mov eax, ebp
+    div ebx
+    mov ebp, eax
+    add dl, '0'
+    dec edi
+    mov [edi], dl
+    mov eax, ebp
+    or eax, ecx
+    jnz .digit64
+    mov esi, edi
+    call console_puts
+    popad
+    ret
+number_buffer times 32 db 0
 hex_digits db '0123456789ABCDEF'
 hex_prefix db '0x',0

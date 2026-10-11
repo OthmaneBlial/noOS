@@ -32,6 +32,7 @@ start:
 .a20_ok:
     mov si, a20_ok
     call puts
+    call e820_read
     cli
     lgdt [gdtr]
     mov si, gdt_ok
@@ -40,6 +41,57 @@ start:
     or eax, 1
     mov cr0, eax
     jmp 0x08:protected_entry
+
+e820_read:
+    xor ax, ax
+    mov es, ax
+    mov word [0x4ff0], 0
+    mov dword [0x4ff4], 0
+    mov di, 0x5000
+    xor ebx, ebx
+    mov bp, 256               ; bounded even if a broken BIOS cycles continuation IDs
+.next:
+    cmp word [0x4ff0], 128
+    jae .fail
+    mov dword [es:di+20], 1
+    mov eax, 0xe820
+    mov edx, 0x534d4150
+    mov ecx, 24
+    push di
+    int 0x15
+    pop di
+    jc .end
+    cmp eax, 0x534d4150
+    jne .fail
+    cmp ecx, 20
+    jb .fail
+    cmp ecx, 24
+    ja .fail
+    jne .length
+    test dword [es:di+20], 1
+    jz .skip
+.length:
+    mov eax, [es:di+8]
+    or eax, [es:di+12]
+    jz .skip
+    inc word [0x4ff0]
+    add di, 24
+.skip:
+    test ebx, ebx
+    jz .end
+    dec bp
+    jnz .next
+    jmp .fail
+.end:
+    cmp word [0x4ff0], 0
+    je .fail
+    mov dword [0x4ff4], 0x534d4150
+    mov si, e820_ok
+    call puts
+    ret
+.fail:
+    mov si, e820_msg
+    jmp fail
 
 ; Return ZF=0 if the addresses separated by 1 MiB do not alias.
 check_a20:
@@ -89,6 +141,8 @@ a20_ok db '[OK] A20 enabled (verified)',13,10,0
 gdt_ok db '[OK] GDT initialized',13,10,0
 disk_msg db '[BOOT ERROR] Kernel disk read failed',13,10,0
 a20_msg db '[BOOT ERROR] A20 activation failed',13,10,0
+e820_msg db '[BOOT ERROR] Invalid or oversized E820 map',13,10,0
+e820_ok db '[OK] E820 map preserved',13,10,0
 align 4
 dap:
     db 16,0

@@ -4,6 +4,10 @@ kernel_main:
     call console_puts
     call idt_init
     call pic_init
+    call pmm_init
+    call pmm_selftest
+    call heap_init
+    call heap_selftest
     call keyboard_init
     mov esi, keyboard_ready
     call console_puts

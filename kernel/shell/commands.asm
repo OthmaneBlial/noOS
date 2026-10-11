@@ -111,6 +111,43 @@ command_reboot:
 .fallback:
     lidt [empty_idtr]          ; triple-fault reset if PS/2 reset is unavailable
     int 3
+command_mem:
+    mov esi, mem_e820
+    call console_puts
+    mov eax, [e820_usable]
+    mov edx, [e820_usable+4]
+    shrd eax, edx, 10
+    shr edx, 10
+    call print_u64
+    call print_newline
+    mov esi, mem_managed
+    call console_puts
+    mov eax, [pmm_total]
+    call print_u32
+    call print_newline
+    mov esi, mem_reserved
+    call console_puts
+    mov eax, FRAME_LIMIT
+    sub eax, [pmm_total]
+    call print_u32
+    call print_newline
+    mov esi, mem_used
+    call console_puts
+    mov eax, [pmm_used]
+    call print_u32
+    call print_newline
+    mov esi, mem_free
+    call console_puts
+    mov eax, [pmm_free_count]
+    call print_u32
+    call print_newline
+    mov esi, mem_heap
+    call console_puts
+    mov eax, [heap_used]
+    call print_u32
+    call print_newline
+    mov esi, mem_limit
+    jmp console_puts
 command_table:
     dd help_name, command_help, 0, help_name
     dd clear_name, command_clear, 0, clear_name
@@ -122,6 +159,7 @@ command_table:
     dd reboot_name, command_reboot, 0, reboot_name
     dd halt_name, command_halt, 0, halt_name
     dd panic_name, command_panic, 0, panic_name
+    dd mem_name, command_mem, 0, mem_name
     dd 0,0,0,0
 help_name db 'help',0
 clear_name db 'clear',0
@@ -133,6 +171,14 @@ color_name db 'color',0
 reboot_name db 'reboot',0
 halt_name db 'halt',0
 panic_name db 'panic',0
+mem_name db 'mem',0
+mem_e820 db 'E820 usable KiB: ',0
+mem_managed db 'Managed usable frames: ',0
+mem_reserved db 'Reserved/unavailable frames in managed window: ',0
+mem_used db 'Allocated frames: ',0
+mem_free db 'Free frames: ',0
+mem_heap db 'Heap used bytes: ',0
+mem_limit db 'Page size: 4096 bytes; managed window: 128 MiB; heap arena: 64 KiB',10,0
 echo_usage db 'echo [text]',0
 color_help db 'color FB (hex foreground/background)',0
 color_usage db 'Usage: color FB (two hex digits, foreground then background)',10,0
