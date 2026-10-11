@@ -7,7 +7,7 @@ to a protected-mode Assembly kernel. QEMU tests verify BIOS loading, A20,
 32-bit entry, VGA output, PS/2 interrupts and an interactive editing shell.
 
 <!-- progress:start -->
-## Roadmap — 75%
+## Roadmap — 80%
 
 Progress counts verified gates, including the advanced roadmap. Planned work earns no credit.
 
@@ -20,7 +20,7 @@ Progress counts verified gates, including the advanced roadmap. Planned work ear
 | 5. Memory management | 5/5 |
 | 6. Hardware and diagnostics | 5/5 |
 | 7. Advanced kernel | 0/5 |
-| 8. Professional delivery | 0/5 |
+| 8. Professional delivery | 2/5 |
 <!-- progress:end -->
 
 Runtime code will use NASM Assembly only. Make and Python are host build/test

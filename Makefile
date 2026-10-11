@@ -1,9 +1,10 @@
 NASM ?= nasm
 QEMU ?= qemu-system-i386
+export QEMU
 PYTHON ?= python3
 QEMU_FLAGS = -machine pc -m 128M -drive format=raw,file=build/noos.img -serial stdio -no-shutdown
 
-.PHONY: all run debug test clean size
+.PHONY: all run debug test clean size benchmark screenshot
 all: build/noos.img
 
 build:
@@ -38,9 +39,17 @@ test: all
 	$(PYTHON) tests/test_memory.py
 	$(PYTHON) tests/test_paging.py
 	$(PYTHON) tests/test_hardware.py
+	$(PYTHON) tests/test_debug.py
+	$(PYTHON) tools/progress.py --check
 
 size: all
 	$(PYTHON) tools/image.py size
 
 clean:
 	rm -rf build
+
+benchmark: all
+	$(PYTHON) tools/benchmark.py
+
+screenshot: all
+	$(PYTHON) tools/capture.py

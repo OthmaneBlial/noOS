@@ -46,8 +46,10 @@ def main():
         bad = pathlib.Path(tmp) / "short.img"
         bad.write_bytes(raw[:512])
         boot(bad, "BOOT ERROR")
+        bad.write_bytes(raw[:9*512])
+        boot(bad, "Kernel disk read failed")
     print(f"PASS: boot signature, BIOS loading, A20, protected-mode kernel; {elapsed:.3f}s")
-    print("PASS: truncated-disk boot failure produces diagnostics")
+    print("PASS: truncated stage2/kernel disks produce explicit boot diagnostics")
 
 
 if __name__ == "__main__":
