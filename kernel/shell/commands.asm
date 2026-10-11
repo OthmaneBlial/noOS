@@ -255,6 +255,7 @@ command_table:
     dd halt_name, command_halt, 0, halt_name
     dd panic_name, command_panic, 1, panic_help
     dd mem_name, command_mem, 0, mem_name
+    dd bench_name, command_bench, 0, bench_help
     dd cpu_name, command_cpu, 0, cpu_name
     dd uptime_name, command_uptime, 0, uptime_name
     dd sysinfo_name, command_sysinfo, 0, sysinfo_name
@@ -287,6 +288,8 @@ panic_divide db 'divide',0
 panic_help db 'panic [page|gp|divide]',0
 panic_usage db 'Usage: panic [page|gp|divide]',10,0
 mem_name db 'mem',0
+bench_name db 'bench',0
+bench_help db 'bench (100000 real frame alloc/free pairs)',0
 cpu_name db 'cpu',0
 uptime_name db 'uptime',0
 sysinfo_name db 'sysinfo',0

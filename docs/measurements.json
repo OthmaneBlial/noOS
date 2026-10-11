@@ -1,0 +1,22 @@
+{
+  "measured_date": "2026-10-12",
+  "method": "3 local QEMU TCG pc/128M boots; host wall time including QMP input overhead; regression suite stopped",
+  "boot_to_prompt_ms": [458.9346250286326, 464.00083298794925, 461.73195901792496],
+  "median_boot_to_prompt_ms": 461.732,
+  "enter_to_version_response_ms": [18.68566602934152, 13.849959010258317, 14.25733300857246],
+  "median_enter_to_response_ms": 14.257,
+  "frame_allocator": {
+    "alloc_free_pairs_per_sample": 100000,
+    "elapsed_pit_ticks": [60, 60, 60],
+    "pit_divisor": 11932,
+    "pit_clock_hz": 1193182,
+    "limits": "Quantized elapsed time includes IRQs; 0 means below one tick."
+  },
+  "binary_bytes": {"stage1.bin": 512, "stage2.bin": 641, "kernel.bin": 82001, "noos.img": 87040, "initrd.bin": 17288},
+  "sha256": {
+    "kernel.bin": "b9897fd105b2b88a38692b41094bffefe153e8c5db61b2fd441722bfad0caaba",
+    "noos.img": "df5db21917311e17467f1a3f12c1c5b214362dec3760ee8b6a29174a5f921c24"
+  },
+  "memory": "128 MiB management ceiling; 64 KiB heap arena; 33 pinned paging frames; user frames freed on return",
+  "limits": "Local QEMU observations only; neither physical-hardware results nor performance guarantees."
+}

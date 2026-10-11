@@ -1,6 +1,7 @@
 """Host-observed QEMU latency, including QMP/TCG overhead; no hardware claims."""
 import json
 import pathlib
+import re
 import statistics
 import sys
 import time
@@ -11,6 +12,7 @@ from qemu import Machine
 
 boots = []
 responses = []
+frame_ticks = []
 for _ in range(3):
     start = time.monotonic()
     with Machine() as machine:
@@ -22,12 +24,18 @@ for _ in range(3):
         machine.key("ret")
         machine.wait("noOS 0.1.0", start=offset)
         responses.append((time.monotonic() - start) * 1000)
+        sample = machine.shell("bench", "below tick resolution.")
+        frame_ticks.append(int(re.search(r"elapsed PIT ticks: (\d+)", sample)[1]))
 report = {
     "method": "3 local QEMU TCG pc/128M boots; host wall time including QMP input overhead",
     "boot_to_prompt_ms": boots,
     "median_boot_to_prompt_ms": round(statistics.median(boots), 3),
     "enter_to_version_response_ms": responses,
     "median_enter_to_response_ms": round(statistics.median(responses), 3),
+    "frame_allocator": {"alloc_free_pairs_per_sample": 100000,
+                        "elapsed_pit_ticks": frame_ticks,
+                        "pit_divisor": 11932, "pit_clock_hz": 1193182,
+                        "limits": "Quantized elapsed time includes IRQs; 0 means below one tick."},
     "binary_bytes": {name: (ROOT / "build" / name).stat().st_size
                      for name in ("stage1.bin", "stage2.bin", "kernel.bin", "noos.img")},
     "memory": "128 MiB management ceiling; 64 KiB heap arena; 33 pinned paging frames",

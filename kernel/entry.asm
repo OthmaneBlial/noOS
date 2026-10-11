@@ -30,6 +30,7 @@ hello db '[OK] Protected mode activated | noOS kernel entry',10,0
 %include "kernel/memory/physical.asm"
 %include "kernel/memory/heap.asm"
 %include "kernel/memory/paging.asm"
+%include "kernel/memory/benchmark.asm"
 %include "kernel/fs/initrd.asm"
 %include "kernel/fs/nofs.asm"
 %include "kernel/fs/files.asm"

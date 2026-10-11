@@ -20,6 +20,8 @@
   checked INT 80h calls, controlled fault termination and allocation cleanup.
 - Validated static ELF32/i386 loader, real hello/fault/checks Assembly
   executables, RX/RW mappings, BSS and 30 malformed executable tests.
+- Real frame-allocation benchmark with PIT-quantized measurements and
+  repository instructions preserving the user's verified direct-main workflow.
 
 Foundation measurement: stage1 512 bytes, stage2 641 bytes, kernel 27,704 bytes,
 raw sector-padded image 32,768 bytes. Run `make size` for current source.

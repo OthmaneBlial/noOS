@@ -24,8 +24,8 @@ serial/debug logs, inspects emulated physical memory and invokes GNU GDB.
 | Reboot/halt | New kernel boot after reset; HLT=1 and no keyboard output after halt |
 | Usable QEMU/GDB | Actual GNU GDB breakpoint, register checks and instruction inspection |
 | Accurate README | Roadmap sync gate and explicit limits; reviewed against modules |
-| Automated subsystems | Ten focused hardware suites, assembly self-checks and CI |
-| Entire runtime Assembly | All boot/kernel sources NASM; no high-level runtime linked |
+| Automated subsystems | Thirteen focused QEMU/GDB suites, assembly self-checks and CI |
+| Entire runtime Assembly | All boot/kernel/user sources NASM; no high-level runtime linked |
 
 ## Additional checks
 
@@ -80,3 +80,9 @@ runs. Thirty corrupted ELF fixtures cover class/endianness/ABI/type/machine,
 header/table sizes, counts/offset overflow, unsupported segment types, alignment,
 file/memory bounds, W+X, non-executable/out-of-range entry and overlapping pages.
 Each rejection leaves a responsive shell and unchanged allocation count.
+
+The `bench` command performs 100,000 real frame allocation/free pairs. Memory
+tests verify unchanged frame counts afterward at all four RAM sizes. PIT tick
+measurements are quantized and include interrupts/preemption; a zero result
+means less than one tick, not zero work. Host measurements run separately from
+the regression suite to avoid disk locking and competing QEMU workloads.

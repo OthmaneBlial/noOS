@@ -35,4 +35,9 @@ for memory in ("16M", "64M", "128M", "256M"):
                                                 min(32768, (base + length + 4095) // 4096)))
         assert managed == len(eligible)
         assert used == 33
+        report = machine.shell("bench", "below tick resolution.")
+        assert re.search(r"100000 alloc/free pairs; elapsed PIT ticks: \d+", report)
+        after = machine.shell("mem", "heap arena: 64 KiB")
+        assert int(re.search(r"Free frames: (\d+)", after)[1]) == free
+        assert int(re.search(r"Allocated frames: (\d+)", after)[1]) == used
         print(f"PASS: {memory} E820={usable}KiB, managed={managed}, free={free}, used={used}")

@@ -36,7 +36,7 @@ make run
 ```
 
 On Debian/Ubuntu, install `nasm qemu-system-x86 gdb make python3` instead.
-Verified locally with NASM 3.02, QEMU 11.1.1, GNU Make 3.81, Python 3.14 and
+Verified locally with NASM 3.02, QEMU 11.1.1, GNU Make 3.81, Python 3.12.5 and
 cross GDB 18.1. CI tests Ubuntu's packaged NASM/QEMU/GDB independently.
 
 Use the **QEMU window** for PS/2 keyboard input. The host terminal receives COM1
@@ -50,6 +50,7 @@ halts the guest CPU, while `reboot` restarts the guest.
 | `history` | Eight most recent nonempty commands, including itself |
 | `color FB` | Hex foreground/background; `color e1` is yellow on blue |
 | `mem` | E820 usable RAM, managed/allocated/free frames and heap usage |
+| `bench` | Time 100,000 actual frame allocation/free pairs using PIT ticks |
 | `uptime` | Actual 64-bit PIT ticks and elapsed seconds |
 | `cpu` | CPUID vendor, family, model, stepping and feature bits |
 | `sysinfo` | Kernel, paging, CPU, memory, timer and keyboard IRQ statistics |
@@ -87,6 +88,9 @@ data powers the website. After verifying a gate, update its boolean and run
 `python3 tools/progress.py`; `make test` rejects a stale README or site copy.
 [The full roadmap](docs/roadmap.md) includes persistent storage, scheduling,
 ring 3/syscalls, validated ELF32 loading and a separate future x86-64 path.
+The 40-gate v0.1 checklist is complete; it is a bounded milestone scope, not
+production maturity. Future work includes concurrent user scheduling, NX/PAE,
+power-loss testing and the [separate x86-64 plan](docs/x86-64.md).
 
 ## What is verified
 
@@ -155,24 +159,31 @@ three directory levels and 4 KiB files. The write command is bounded by the
 127-character shell line. It has no encryption or secure deletion, and does
 not promise durability across arbitrary real-device power failures.
 
-### Measured foundation build
+### Measured builds
 
-| Artifact | Bytes |
-| --- | ---: |
-| Stage 1 executable | 512 |
-| Stage 2 executable | 641 |
-| Kernel executable and static data | 27,704 |
-| Raw disk, including sector padding | 32,768 |
+| Artifact | Foundation bytes | v0.1 advanced bytes |
+| --- | ---: | ---: |
+| Stage 1 executable | 512 | 512 |
+| Stage 2 executable | 641 | 641 |
+| Kernel executable and static data, including initrd | 27,704 | 82,001 |
+| Raw disk, including sector padding | 32,768 | 87,040 |
+
+Current measurements were taken on 2026-10-12. The embedded initrd is 17,288
+bytes, including three genuine ELF32 executables. The separate persistent
+data disk is 524,288 bytes and is not included in the boot-image size.
 
 At 128 MiB QEMU RAM, E820 reports 130,559 usable KiB. The allocator tracks
 32,480 usable frames: 33 pinned for paging and 32,447 free after boot. The heap
 arena is in the reserved low-memory region. Run `mem` and `make size` for the
 current build; these values are observations, not hardcoded guest statistics.
 
-Three local QEMU TCG boots measured a 434 ms median from process start to
-prompt, and 19 ms from emulated Enter to `version` response, including QMP/host
-overhead. `make benchmark` writes fresh samples to `build/measurements.json`.
+Three local QEMU TCG boots measured a 462 ms median from process start to
+prompt, and 14 ms from emulated Enter to `version` response, including QMP/host
+overhead. Each sample timed 100,000 real allocation/free pairs at 60 PIT ticks
+(about 600 ms, quantized and including IRQ overhead). `make benchmark` writes
+fresh samples to `build/measurements.json`.
 These observations are not physical-machine benchmarks or timing guarantees.
+See the [recorded methodology and samples](docs/measurements.json).
 
 ## Scope and technical challenges
 
