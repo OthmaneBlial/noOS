@@ -14,7 +14,7 @@ def render():
     assert all(type(value) is bool for value in gates)
     percentage = sum(gates) * 100 / len(gates)
     lines = [f"## Roadmap — {percentage:g}%", "",
-             "Progress counts verified gates, including the advanced roadmap. Planned work earns no credit.",
+             "Progress counts the 40 verified v0.1 gates, including advanced features. Planned work earns no credit.",
              "", "| Milestone | Verified |", "| --- | --- |"]
     for index, item in enumerate(milestones, 1):
         values = list(item["gates"].values())

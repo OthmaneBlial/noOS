@@ -57,6 +57,7 @@ halts the guest CPU, while `reboot` restarts the guest.
 | `mkdir NAME`, `touch NAME`, `write FILE [TEXT]`, `rm NAME` | Real IDE disk files; write replaces contents; rm accepts empty directories |
 | `ps`, `tasks on\|off` | Ring-0 task states, work/switch/tick counters and PIT-preempted workers |
 | `user demo\|fault\|write\|stack\|io\|spin` | Real ring-3 execution, checked syscalls and recoverable protection faults |
+| `run NAME.elf` | Validate an initrd ELF32 executable and run it in ring 3 |
 | `reboot`, `halt` | Hardware reset or interrupt-disabled CPU halt |
 | `panic [page\|gp\|divide]` | Real CPU fault with vector, error code, EIP and CR2 when applicable |
 
@@ -65,9 +66,9 @@ Home, End, Delete and Backspace work. Escape clears the draft. Tab inserts a
 space. Input is limited to 127 characters, using a basic US keyboard layout.
 
 <!-- progress:start -->
-## Roadmap — 97.5%
+## Roadmap — 100%
 
-Progress counts verified gates, including the advanced roadmap. Planned work earns no credit.
+Progress counts the 40 verified v0.1 gates, including advanced features. Planned work earns no credit.
 
 | Milestone | Verified |
 | --- | --- |
@@ -77,7 +78,7 @@ Progress counts verified gates, including the advanced roadmap. Planned work ear
 | 4. Interactive shell | 5/5 |
 | 5. Memory management | 5/5 |
 | 6. Hardware and diagnostics | 5/5 |
-| 7. Advanced kernel | 4/5 |
+| 7. Advanced kernel | 5/5 |
 | 8. Professional delivery | 5/5 |
 <!-- progress:end -->
 
@@ -105,6 +106,10 @@ ring 3/syscalls, validated ELF32 loading and a separate future x86-64 path.
   offsets, counts and duplicates are rejected before reads.
 - A persistent noFS volume uses IDE PIO, redundant checked metadata, alternating
   file data banks and explicit disk flushes. Files survive closing/reopening QEMU.
+- Separate kernel stacks support cooperative switching and actual PIT preemption.
+- Ring 3 uses a TSS, private page tables, checked syscalls and controlled faults.
+- A bounded ELF32 loader runs actual Assembly code/data/BSS and rejects 30
+  malformed executable fixtures before allocation or memory access.
 
 ## Architecture
 
@@ -123,7 +128,7 @@ flowchart LR
 
 The kernel is linked as a flat binary at `0x10000`. NASM includes small modules
 for drivers, interrupts, memory, shell and library routines. Runtime code lives
-only under `boot/` and `kernel/`. [Memory addresses and calling conventions](docs/architecture.md)
+under `boot/`, `kernel/` and `user/`. [Memory addresses and calling conventions](docs/architecture.md)
 are documented explicitly.
 
 ## Build, inspect, debug
@@ -186,7 +191,10 @@ Cooperative switching and PIT-driven preemption with separate stacks are tested.
 Ring 3 uses a TSS, private page directory, read-only code, a guarded stack and
 checked INT 80h syscalls. Protection faults terminate the user process and
 return to the shell. One synchronous user process is supported; concurrent
-user scheduling and ELF loading are pending. Physical-hardware compatibility
+user scheduling is pending. The static ELF32 subset supports 1–4 aligned LOAD
+segments within a 64 KiB user window; try `run hello.elf`, `run checks.elf`, and
+`run fault.elf`. There is no dynamic linking, Linux ABI or NX protection in this
+non-PAE target. Physical-hardware compatibility
 is unverified. Contributions should start with a reproducible failure or a scoped
 roadmap gate; see [CONTRIBUTING.md](CONTRIBUTING.md).
 

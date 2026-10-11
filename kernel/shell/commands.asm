@@ -269,6 +269,7 @@ command_table:
     dd ps_name, command_ps, 0, ps_name
     dd tasks_name, command_tasks, 1, tasks_help
     dd user_name, command_user, 1, user_help
+    dd run_name, command_run, 1, run_help
     dd 0,0,0,0
 help_name db 'help',0
 clear_name db 'clear',0
@@ -304,6 +305,8 @@ tasks_name db 'tasks',0
 tasks_help db 'tasks on|off (PIT-preempted workers)',0
 user_name db 'user',0
 user_help db 'user demo|fault|write|stack|io|spin (ring 3)',0
+run_name db 'run',0
+run_help db 'run NAME.elf (static ELF32 in /initrd)',0
 mkdir_help db 'mkdir NAME',0
 touch_help db 'touch NAME',0
 write_help db 'write FILE [TEXT] (replace)',0

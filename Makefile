@@ -13,7 +13,10 @@ data/noos-data.img:
 build:
 	mkdir -p build
 
-build/initrd.bin: $(shell find initrd -type f) tools/mkinitrd.py | build
+build/%.elf: user/%.asm user/elf.inc | build
+	$(NASM) -f bin -I ./ $< -o $@
+
+build/initrd.bin: $(shell find initrd -type f) tools/mkinitrd.py build/hello.elf build/fault.elf build/checks.elf | build
 	$(PYTHON) tools/mkinitrd.py
 
 build/kernel.bin: $(shell find kernel -name '*.asm') build/initrd.bin | build
@@ -50,6 +53,7 @@ test: all
 	$(PYTHON) tests/test_filesystem.py
 	$(PYTHON) tests/test_tasks.py
 	$(PYTHON) tests/test_user.py
+	$(PYTHON) tests/test_elf.py
 	$(PYTHON) tools/progress.py --check
 
 size: all

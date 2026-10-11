@@ -72,3 +72,11 @@ write/ticks/exit and unknown syscalls, reject a kernel pointer, and trigger real
 kernel-read, code-write, stack-guard and port-I/O protection faults. Every fault
 returns to a responsive shell; repeated executions restore the original frame
 count. Kernel workers resume after a user process returns.
+
+ELF tests run real executable code, two LOAD segments, writable data and
+zero-filled BSS; verify valid and rejected cross-page writes; recover from an
+ELF process's supervisor-memory fault; and check frame counts after repeated
+runs. Thirty corrupted ELF fixtures cover class/endianness/ABI/type/machine,
+header/table sizes, counts/offset overflow, unsupported segment types, alignment,
+file/memory bounds, W+X, non-executable/out-of-range entry and overlapping pages.
+Each rejection leaves a responsive shell and unchanged allocation count.

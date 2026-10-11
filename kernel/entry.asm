@@ -35,5 +35,6 @@ hello db '[OK] Protected mode activated | noOS kernel entry',10,0
 %include "kernel/fs/files.asm"
 %include "kernel/tasks/scheduler.asm"
 %include "kernel/tasks/user.asm"
+%include "kernel/tasks/elf.asm"
 %include "kernel/shell/commands.asm"
 %include "kernel/main.asm"

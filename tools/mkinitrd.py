@@ -24,6 +24,8 @@ def pack(files):
 
 if __name__ == "__main__":
     files = [(p.name, p.read_bytes()) for p in sorted((ROOT / "initrd").iterdir()) if p.is_file()]
+    files += [(name + ".elf", (ROOT / "build" / (name + ".elf")).read_bytes())
+              for name in ("hello", "fault", "checks")]
     image = pack(files)
     (ROOT / "build/initrd.bin").write_bytes(image)
     print(f"Packed {len(files)} actual initrd files, {len(image)} bytes")

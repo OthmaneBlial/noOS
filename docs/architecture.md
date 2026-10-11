@@ -173,7 +173,34 @@ Return restores kernel CR3, segments, stack, flags and scheduler state before
 freeing all owned frames. One user process executes synchronously; kernel-worker
 preemption is suspended during it, while PIT/keyboard interrupts continue.
 There is no concurrent user scheduling or FPU context switching. `user` runs
-an embedded Assembly test program; an ELF loader is the next gate.
+an embedded Assembly test program. `run` loads actual initrd ELF files.
+
+## ELF32 subset
+
+The loader accepts little-endian ELF32, System V ABI version 0, ET_EXEC,
+EM_386 and format version 1. The header is 52 bytes; the program table has
+1–4 entries of 32 bytes and must lie inside the actual file. Only PT_LOAD
+is supported. File offsets and virtual addresses are 4 KiB aligned, alignment
+is exactly 4096, and ordered segments cannot share pages. Each nonempty memory
+range lies in 40000000h–4000ffffh, filesz <= memsz, and every file range is
+bounded without integer overflow. Entry must be inside file-backed RX bytes.
+Accepted flags are R, RX and RW; W+X is rejected. Writable permissions follow
+PF_W. This non-PAE paging mode has no NX bit: data and stack can execute.
+
+All metadata is validated before allocation. Each LOAD gets zeroed frames;
+file bytes are copied through supervisor physical aliases and the remainder
+stays zero for BSS. A fresh guarded stack/address space is created for each run
+and all owned frames are freed on exit, fault or load failure. Section tables
+and p_paddr are unused. Dynamic linking, relocations, PIE, TLS, Linux syscalls
+and argv are unsupported. User execution is synchronous with no time limit;
+a runaway user program requires a VM reset.
+
+`user/elf.inc` emits genuine ELF headers with NASM, and the three Assembly
+programs are included in the initrd by the image builder. `hello.elf` writes
+and exits, `fault.elf` tries a supervisor read, and `checks.elf` validates RW
+data, zero-filled BSS and checked cross-page syscall access. This subset follows
+the [System V ELF header](https://www.sco.com/developers/gabi/2000-07-17/ch4.eheader.html)
+and [program-header definitions](https://www.sco.com/developers/gabi/2000-07-17/ch5.pheader.html).
 
 - [Intel system programming manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 - [QEMU system invocation](https://www.qemu.org/docs/master/system/qemu-manpage.html)

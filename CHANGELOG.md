@@ -18,6 +18,8 @@
   integration checks for advancing work/switch/tick counts and responsive input.
 - Real ring 3, runtime GDT/TSS, private address spaces, guarded stacks,
   checked INT 80h calls, controlled fault termination and allocation cleanup.
+- Validated static ELF32/i386 loader, real hello/fault/checks Assembly
+  executables, RX/RW mappings, BSS and 30 malformed executable tests.
 
 Foundation measurement: stage1 512 bytes, stage2 641 bytes, kernel 27,704 bytes,
 raw sector-padded image 32,768 bytes. Run `make size` for current source.
