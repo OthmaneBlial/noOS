@@ -33,6 +33,7 @@ debug: all
 test: all
 	$(PYTHON) tests/test_boot.py
 	$(PYTHON) tests/test_vga.py
+	$(PYTHON) tests/test_keyboard.py
 
 size: all
 	$(PYTHON) tools/image.py size

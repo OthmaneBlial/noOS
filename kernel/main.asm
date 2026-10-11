@@ -2,7 +2,29 @@ kernel_main:
     call vga_selftest
     mov esi, welcome
     call console_puts
-    ret
+    call idt_init
+    call pic_init
+    call keyboard_init
+    mov esi, keyboard_ready
+    call console_puts
+.input:
+    cli
+    call keyboard_get
+    test eax, eax
+    jnz .event
+    sti
+    hlt
+    jmp .input
+.event:
+    sti
+    mov ebx, eax
+    mov esi, key_msg
+    call console_puts
+    call print_hex
+    call print_newline
+    jmp .input
+keyboard_ready db '[KBD] IRQ1 ready; keyboard diagnostic input active',10,0
+key_msg db 'key=',0
 vga_selftest:
     call vga_clear
     mov byte [vga_color], 0x1e

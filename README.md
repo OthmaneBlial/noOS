@@ -7,7 +7,7 @@ to a protected-mode Assembly kernel. The first boot is verified in QEMU: BIOS
 disk loading, A20 checking, GDT setup and 32-bit kernel entry all work.
 
 <!-- progress:start -->
-## Roadmap — 25%
+## Roadmap — 37.5%
 
 Progress counts verified gates, including the advanced roadmap. Planned work earns no credit.
 
@@ -15,7 +15,7 @@ Progress counts verified gates, including the advanced roadmap. Planned work ear
 | --- | --- |
 | 1. BIOS boot and protected-mode kernel | 5/5 |
 | 2. VGA terminal | 5/5 |
-| 3. Interrupt-driven PS/2 keyboard | 0/5 |
+| 3. Interrupt-driven PS/2 keyboard | 5/5 |
 | 4. Interactive shell | 0/5 |
 | 5. Memory management | 0/5 |
 | 6. Hardware and diagnostics | 0/5 |
