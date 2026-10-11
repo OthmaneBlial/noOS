@@ -10,7 +10,10 @@ all: build/noos.img
 build:
 	mkdir -p build
 
-build/kernel.bin: $(shell find kernel -name '*.asm') | build
+build/initrd.bin: $(shell find initrd -type f) tools/mkinitrd.py | build
+	$(PYTHON) tools/mkinitrd.py
+
+build/kernel.bin: $(shell find kernel -name '*.asm') build/initrd.bin | build
 	$(NASM) -f bin -I ./ -l build/kernel.lst kernel/entry.asm -o $@
 
 build/layout.inc: build/kernel.bin tools/image.py
@@ -40,6 +43,7 @@ test: all
 	$(PYTHON) tests/test_paging.py
 	$(PYTHON) tests/test_hardware.py
 	$(PYTHON) tests/test_debug.py
+	$(PYTHON) tests/test_initrd.py
 	$(PYTHON) tools/progress.py --check
 
 size: all

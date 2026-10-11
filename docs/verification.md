@@ -24,7 +24,7 @@ serial/debug logs, inspects emulated physical memory and invokes GNU GDB.
 | Reboot/halt | New kernel boot after reset; HLT=1 and no keyboard output after halt |
 | Usable QEMU/GDB | Actual GNU GDB breakpoint, register checks and instruction inspection |
 | Accurate README | Roadmap sync gate and explicit limits; reviewed against modules |
-| Automated subsystems | Eight focused hardware suites, assembly self-checks and CI |
+| Automated subsystems | Nine focused hardware suites, assembly self-checks and CI |
 | Entire runtime Assembly | All boot/kernel sources NASM; no high-level runtime linked |
 
 ## Additional checks
@@ -37,6 +37,10 @@ split/reuse/coalesce, full-arena exhaustion and invalid frees.
 Paging tests inspect CR0/CR3, all 32 tables and 32,768 mappings; validate
 supervisor permissions, the null guard, uncached VGA and zero unused PDEs.
 Fault tests check #UD, #PF/CR2, #GP error code, #DE and NMI.
+
+Initrd tests read actual files and boot six corrupt image variants: magic,
+count, offset, size, missing name terminator and duplicate name. All are
+rejected with a diagnostic before file access.
 
 CI compares two clean images byte for byte. Binary sizes are separate from
 padded disk size. `make benchmark` measures host-observed QEMU samples.

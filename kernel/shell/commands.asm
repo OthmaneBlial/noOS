@@ -258,6 +258,10 @@ command_table:
     dd cpu_name, command_cpu, 0, cpu_name
     dd uptime_name, command_uptime, 0, uptime_name
     dd sysinfo_name, command_sysinfo, 0, sysinfo_name
+    dd ls_name, command_ls, 0, ls_name
+    dd cat_name, command_cat, 1, cat_help
+    dd pwd_name, command_pwd, 0, pwd_name
+    dd cd_name, command_cd, 1, cd_help
     dd 0,0,0,0
 help_name db 'help',0
 clear_name db 'clear',0
@@ -278,6 +282,12 @@ mem_name db 'mem',0
 cpu_name db 'cpu',0
 uptime_name db 'uptime',0
 sysinfo_name db 'sysinfo',0
+ls_name db 'ls',0
+cat_name db 'cat',0
+pwd_name db 'pwd',0
+cd_name db 'cd',0
+cat_help db 'cat FILE',0
+cd_help db 'cd /',0
 cpu_vendor_label db 'CPU vendor: ',0
 cpu_family_label db 'Family: ',0
 cpu_model_label db ' Model: ',0

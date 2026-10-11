@@ -30,4 +30,5 @@ hello db '[OK] Protected mode activated | noOS kernel entry',10,0
 %include "kernel/memory/heap.asm"
 %include "kernel/memory/paging.asm"
 %include "kernel/shell/commands.asm"
+%include "kernel/fs/initrd.asm"
 %include "kernel/main.asm"

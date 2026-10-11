@@ -62,6 +62,7 @@ after `org 0x10000`; a listing byte offset must add 10000h for a guest address.
 | `memory/heap.asm` | EAX=size/pointer; 16-byte alignment; CF indicates allocation/free failure |
 | `memory/paging.asm` | Allocates/pins tables, validates required identity pages, enables PG/WP |
 | `shell/` | Main-context command execution only; table entries contain name/function/argument rule/help |
+| `fs/initrd.asm` | Validated NIRD header/40-byte entries; file reads bounded by real embedded size |
 
 IRQ entry uses PUSHAD, clears DF, invokes a handler, restores registers and
 IRETD. Handlers do not print, allocate or invoke the shell. Keyboard consumption
@@ -90,6 +91,14 @@ and data currently share writable supervisor mappings; this is not userspace
 isolation. Large pages, PAE, SMP, APIC, UEFI and long mode are not implemented.
 
 ## References
+
+The read-only initrd is a genuine embedded filesystem, packed from `initrd/`
+into `build/initrd.bin` by a host tool and interpreted entirely in Assembly.
+Its header records magic/version/count/total length. Each entry is a 32-byte
+terminated ASCII name plus offset/length. Metadata is checked for bounds,
+overflow, overlap, duplicate names and unsupported paths before use. `ls`,
+`cat`, `pwd` and `cd /` operate on this flat root. This is read-only image
+content, not writable disk persistence.
 
 - [Intel system programming manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 - [QEMU system invocation](https://www.qemu.org/docs/master/system/qemu-manpage.html)

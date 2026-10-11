@@ -8,6 +8,8 @@
 - E820 frame allocator, coalescing heap and supervisor paging with null guard.
 - Real fault diagnostics, QEMU hardware tests and usable GDB debugging.
 - Reproducible build CI, authentic screenshot and computed roadmap.
+- Validated read-only initrd with real ls/cat/pwd/cd and corruption tests.
+- Public showcase and field manual at https://othmaneblial.github.io/noOS/.
 
 Foundation measurement: stage1 512 bytes, stage2 641 bytes, kernel 27,704 bytes,
 raw sector-padded image 32,768 bytes. Run `make size` for current source.

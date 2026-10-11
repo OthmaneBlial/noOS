@@ -1,0 +1,2 @@
+Hello from the noOS initrd.
+This file lives in the boot image and is read by the Assembly kernel.

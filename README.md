@@ -12,7 +12,7 @@
 A tiny BIOS-booted x86 operating system with its own bootloader, protected-mode
 kernel, interrupt drivers, memory allocators and interactive shell.
 
-[Architecture](docs/architecture.md) · [Debugging](docs/debugging.md) · [Test evidence](docs/verification.md) · [Contribute](CONTRIBUTING.md)
+[Project site](https://othmaneblial.github.io/noOS/) · [Field manual](https://othmaneblial.github.io/noOS/docs.html) · [Architecture](docs/architecture.md) · [Test evidence](docs/verification.md) · [Contribute](CONTRIBUTING.md)
 
 ![Actual noOS VGA welcome screen captured from a running QEMU machine](screenshots/noos.png)
 
@@ -53,6 +53,7 @@ halts the guest CPU, while `reboot` restarts the guest.
 | `uptime` | Actual 64-bit PIT ticks and elapsed seconds |
 | `cpu` | CPUID vendor, family, model, stepping and feature bits |
 | `sysinfo` | Kernel, paging, CPU, memory, timer and keyboard IRQ statistics |
+| `ls`, `cat FILE`, `pwd`, `cd /` | Real read-only initrd directory and bounded file reads |
 | `reboot`, `halt` | Hardware reset or interrupt-disabled CPU halt |
 | `panic [page\|gp\|divide]` | Real CPU fault with vector, error code, EIP and CR2 when applicable |
 
@@ -61,7 +62,7 @@ Home, End, Delete and Backspace work. Escape clears the draft. Tab inserts a
 space. Input is limited to 127 characters, using a basic US keyboard layout.
 
 <!-- progress:start -->
-## Roadmap — 85%
+## Roadmap — 90%
 
 Progress counts verified gates, including the advanced roadmap. Planned work earns no credit.
 
@@ -73,8 +74,8 @@ Progress counts verified gates, including the advanced roadmap. Planned work ear
 | 4. Interactive shell | 5/5 |
 | 5. Memory management | 5/5 |
 | 6. Hardware and diagnostics | 5/5 |
-| 7. Advanced kernel | 0/5 |
-| 8. Professional delivery | 4/5 |
+| 7. Advanced kernel | 1/5 |
+| 8. Professional delivery | 5/5 |
 <!-- progress:end -->
 
 The percentage comes from [40 explicit gates](docs/progress.json). The same
@@ -97,6 +98,8 @@ ring 3/syscalls, validated ELF32 loading and a separate future x86-64 path.
 - QEMU tests cover multiple commands, bad input, history, scrolling, actual CPU
   faults, memory exhaustion, four RAM sizes, hardware reboot and CPU halt.
 - GDB reaches the kernel entry using an actual hardware breakpoint.
+- A validated read-only initrd embeds actual files; malformed names, sizes,
+  offsets, counts and duplicates are rejected before reads.
 
 ## Architecture
 
@@ -165,7 +168,7 @@ interrupts, bounding asynchronous input, preserving exception error frames,
 and mapping live stacks and hardware before enabling CR0.PG. Tests exercise
 these boundaries instead of treating successful assembly as a boot proof.
 
-Persistent storage, tasks, ring 3, syscalls and ELF executables are still
+Writable persistent storage, tasks, ring 3, syscalls and ELF executables are still
 pending. There is no userspace isolation or physical-hardware compatibility
 claim. Contributions should start with a reproducible failure or a scoped
 roadmap gate; see [CONTRIBUTING.md](CONTRIBUTING.md).
