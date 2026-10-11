@@ -7,24 +7,9 @@ kernel_main:
     call keyboard_init
     mov esi, keyboard_ready
     call console_puts
-.input:
-    cli
-    call keyboard_get
-    test eax, eax
-    jnz .event
     sti
-    hlt
-    jmp .input
-.event:
-    sti
-    mov ebx, eax
-    mov esi, key_msg
-    call console_puts
-    call print_hex
-    call print_newline
-    jmp .input
-keyboard_ready db '[KBD] IRQ1 ready; keyboard diagnostic input active',10,0
-key_msg db 'key=',0
+    jmp shell_start
+keyboard_ready db '[KBD] IRQ1 ready',10,0
 vga_selftest:
     call vga_clear
     mov byte [vga_color], 0x1e
@@ -97,4 +82,4 @@ welcome db 10
     db ' |_| |_|\___/ \___/|____/',10,10
     db '  No Linux. No Windows. No C. Just Assembly.',10
     db '  x86 / 32-bit protected mode / kernel 0.1.0',10,10
-    db '  VGA terminal ready. Interactive shell coming next.',10,0
+    db '  VGA terminal ready.',10,0

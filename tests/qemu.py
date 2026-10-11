@@ -21,7 +21,7 @@ class Machine:
             os.environ.get("QEMU", "qemu-system-i386"), "-machine", "pc",
             "-m", memory, "-drive", f"format=raw,file={image or ROOT / 'build/noos.img'}",
             "-display", "none", "-serial", f"file:{self.serial}",
-            "-debugcon", f"file:{self.debug}", "-no-reboot", "-no-shutdown",
+            "-debugcon", f"file:{self.debug}", "-no-shutdown",
             "-qmp", f"unix:{self.directory / 'qmp'},server=on,wait=off", *extra,
         ], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         self.socket = socket.socket(socket.AF_UNIX)
@@ -94,6 +94,13 @@ class Machine:
         target = self.directory / "memory.bin"
         self.hmp(f'pmemsave {address:#x} {size} "{target}"')
         return target.read_bytes()
+
+    def shell(self, text, expected=None):
+        start = len(self.output())
+        self.type(text)
+        self.key("ret")
+        self.wait(expected or "noOS> ", start=start)
+        return self.output()[start:]
 
     def screen(self):
         return self.memory(0xb8000, 4000)[::2].decode("cp437")

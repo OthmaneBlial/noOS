@@ -139,6 +139,7 @@ vga_putc:
     mov ecx, VGA_COLS
     rep stosw
     sub ebx, VGA_COLS
+    inc dword [vga_scrolls]
 .store:
     mov [vga_position], bx
     call vga_cursor
@@ -147,3 +148,5 @@ vga_putc:
     ret
 vga_color db 0x0b
 vga_position dw 0
+align 4
+vga_scrolls dd 0

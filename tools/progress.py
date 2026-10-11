@@ -33,6 +33,13 @@ def main():
         assert content == updated, "Run python3 tools/progress.py to refresh README"
     else:
         readme.write_text(updated)
+    site = ROOT / "site"
+    if site.exists():
+        progress = (ROOT / "docs/progress.json").read_text()
+        if "--check" in sys.argv:
+            assert (site / "progress.json").read_text() == progress, "Site progress is stale"
+        else:
+            (site / "progress.json").write_text(progress)
     print(render().splitlines()[0])
 
 
