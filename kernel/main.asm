@@ -12,7 +12,10 @@ kernel_main:
     call keyboard_init
     mov esi, keyboard_ready
     call console_puts
+    call cpu_init
+    call timer_init
     sti
+    call timer_selftest
     jmp shell_start
 keyboard_ready db '[KBD] IRQ1 ready',10,0
 vga_selftest:

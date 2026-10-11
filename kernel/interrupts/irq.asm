@@ -5,7 +5,12 @@ irq_dispatch:
     cmp eax, 47
     je .spurious_slave
     cmp eax, 33
+    je .keyboard
+    cmp eax, 32
     jne .eoi
+    call timer_irq
+    jmp .eoi
+.keyboard:
     call keyboard_irq
 .eoi:
     cmp ebp, 40

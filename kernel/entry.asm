@@ -22,6 +22,8 @@ hello db '[OK] Protected mode activated | noOS kernel entry',10,0
 %include "kernel/interrupts/pic.asm"
 %include "kernel/interrupts/irq.asm"
 %include "kernel/drivers/keyboard.asm"
+%include "kernel/drivers/timer.asm"
+%include "kernel/drivers/cpu.asm"
 %include "kernel/shell/shell.asm"
 %include "kernel/shell/parser.asm"
 %include "kernel/memory/physical.asm"

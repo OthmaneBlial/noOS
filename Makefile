@@ -37,6 +37,7 @@ test: all
 	$(PYTHON) tests/test_shell.py
 	$(PYTHON) tests/test_memory.py
 	$(PYTHON) tests/test_paging.py
+	$(PYTHON) tests/test_hardware.py
 
 size: all
 	$(PYTHON) tools/image.py size

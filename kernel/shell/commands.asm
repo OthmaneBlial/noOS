@@ -177,6 +177,72 @@ command_mem:
     call print_newline
     mov esi, mem_limit
     jmp console_puts
+command_cpu:
+    cmp byte [cpu_available], 0
+    je .unavailable
+    mov esi, cpu_vendor_label
+    call console_puts
+    mov esi, cpu_vendor
+    call console_puts
+    call print_newline
+    mov esi, cpu_family_label
+    call console_puts
+    mov eax, [cpu_family]
+    call print_u32
+    mov esi, cpu_model_label
+    call console_puts
+    mov eax, [cpu_model]
+    call print_u32
+    mov esi, cpu_stepping_label
+    call console_puts
+    mov eax, [cpu_stepping]
+    call print_u32
+    call print_newline
+    mov esi, cpu_features_label
+    call console_puts
+    mov eax, [cpu_features]
+    call print_hex
+    jmp print_newline
+.unavailable:
+    mov esi, cpu_unavailable
+    jmp console_puts
+command_uptime:
+    mov esi, ticks_label
+    call console_puts
+    pushfd
+    cli
+    mov eax, [timer_ticks]
+    mov edx, [timer_ticks+4]
+    popfd
+    call print_u64
+    call print_newline
+    mov esi, seconds_label
+    call console_puts
+    pushfd
+    cli
+    mov eax, [timer_seconds]
+    mov edx, [timer_seconds+4]
+    popfd
+    call print_u64
+    call print_newline
+    mov esi, pit_info
+    jmp console_puts
+command_sysinfo:
+    call command_version
+    mov esi, sys_mode
+    call console_puts
+    call command_cpu
+    call command_mem
+    call command_uptime
+    mov esi, irq_label
+    call console_puts
+    mov eax, [keyboard_irqs]
+    call print_u32
+    mov esi, dropped_label
+    call console_puts
+    mov eax, [keyboard_dropped]
+    call print_u32
+    jmp print_newline
 command_table:
     dd help_name, command_help, 0, help_name
     dd clear_name, command_clear, 0, clear_name
@@ -189,6 +255,9 @@ command_table:
     dd halt_name, command_halt, 0, halt_name
     dd panic_name, command_panic, 1, panic_help
     dd mem_name, command_mem, 0, mem_name
+    dd cpu_name, command_cpu, 0, cpu_name
+    dd uptime_name, command_uptime, 0, uptime_name
+    dd sysinfo_name, command_sysinfo, 0, sysinfo_name
     dd 0,0,0,0
 help_name db 'help',0
 clear_name db 'clear',0
@@ -206,6 +275,21 @@ panic_divide db 'divide',0
 panic_help db 'panic [page|gp|divide]',0
 panic_usage db 'Usage: panic [page|gp|divide]',10,0
 mem_name db 'mem',0
+cpu_name db 'cpu',0
+uptime_name db 'uptime',0
+sysinfo_name db 'sysinfo',0
+cpu_vendor_label db 'CPU vendor: ',0
+cpu_family_label db 'Family: ',0
+cpu_model_label db ' Model: ',0
+cpu_stepping_label db ' Stepping: ',0
+cpu_features_label db 'CPUID leaf 1 EDX: ',0
+cpu_unavailable db 'CPUID is unavailable on this CPU.',10,0
+ticks_label db 'PIT ticks: ',0
+seconds_label db 'Uptime seconds: ',0
+pit_info db 'PIT clock: 1193182 Hz; divisor: 11932; nominal rate: ~100 Hz',10,0
+sys_mode db 'Mode: 32-bit protected; paging: supervisor identity map',10,0
+irq_label db 'Keyboard IRQs: ',0
+dropped_label db ' Dropped events: ',0
 mem_e820 db 'E820 usable KiB: ',0
 mem_managed db 'Managed usable frames: ',0
 mem_reserved db 'Reserved/unavailable frames in managed window: ',0
