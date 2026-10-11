@@ -19,6 +19,16 @@ isr_common:
     cmp eax, 47
     ja isr_exception
     call irq_dispatch
+    cmp dword [esp+32], 32
+    jne isr_restore
+    cmp byte [task_preempt], 1
+    jne isr_restore
+    mov ebx, [task_current]
+    imul ebx, 24              ; PCB stride; scheduler defines appear later
+    inc dword [task_blocks+ebx+16]
+    inc dword [task_quantum]
+    cmp dword [task_quantum], 2
+    jae task_schedule         ; IRQ dispatcher already acknowledged the PIC
 isr_restore:
     popad
     add esp, 8

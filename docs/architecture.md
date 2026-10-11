@@ -126,7 +126,7 @@ contain 1–31 printable ASCII characters without whitespace/slash. `write`
 replaces an existing file with remaining line text. `rm` refuses nonempty
 directories. `/initrd` remains read-only and does not consume a noFS slot.
 
-## Cooperative tasks
+## Cooperative and preemptive tasks
 
 Three ring-0 task control blocks track saved interrupt-frame ESP, ready state,
 work, switches, IRQ ticks and name. The shell uses its original kernel stack;
@@ -138,7 +138,11 @@ through IRETD. Worker termination clears its ready bit before yielding.
 The boot test runs two independent workers to completion and checks counters,
 register preservation and return to the shell. `ps` reports the real blocks.
 This is kernel threading; there is no user privilege or address-space isolation.
-Timer-driven preemption is the next step after this verified context mechanism.
+After cooperative switching passes, a second boot check runs non-yielding
+workers with a two-tick PIT quantum. IRQ0 updates time and acknowledges the PIC
+before scheduling at the saved interrupt-frame boundary. `tasks on` starts the
+workers; `tasks off` stops them without stopping the shell. Tests verify both
+work counters, switches and IRQ ticks advance while keyboard commands execute.
 
 - [Intel system programming manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 - [QEMU system invocation](https://www.qemu.org/docs/master/system/qemu-manpage.html)

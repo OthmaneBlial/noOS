@@ -60,3 +60,8 @@ deletion, full-table exhaustion/reuse, read-only mounts, bad data checksums,
 one-bank recovery and six structurally invalid volumes with valid checksums.
 Invalid volumes remain byte-identical after attempted writes. Power-loss timing
 at every write is not yet exhaustively tested. Userspace isolation remains pending.
+
+Task tests first check cooperative register restoration and worker completion,
+then enable two non-yielding workers. Both real work/switch/IRQ-tick counters
+advance across `ps` calls while PS/2 commands remain responsive. Stopping workers
+returns both to DONE. The quantum is two actual PIT interrupts.

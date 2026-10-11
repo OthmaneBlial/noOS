@@ -19,6 +19,7 @@ kernel_main:
     sti
     call timer_selftest
     call task_selftest
+    call task_preemption_selftest
     jmp shell_start
 keyboard_ready db '[KBD] IRQ1 ready',10,0
 vga_selftest:

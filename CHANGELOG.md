@@ -14,6 +14,8 @@
   metadata/data banks, raw-sector/persistence/corruption tests and clean-safe data.
 - Cooperative ring-0 tasks with saved interrupt contexts, separate stacks,
   round-robin switching, controlled completion and ps status.
+- PIT-driven two-tick preemption, non-yielding workers, tasks on/off and
+  integration checks for advancing work/switch/tick counts and responsive input.
 
 Foundation measurement: stage1 512 bytes, stage2 641 bytes, kernel 27,704 bytes,
 raw sector-padded image 32,768 bytes. Run `make size` for current source.
