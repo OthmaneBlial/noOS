@@ -128,6 +128,13 @@ flowchart LR
     IRQ --> SH[Interactive shell]
     MEM --> SH
     UI --> SH
+    K --> FS[Initrd / persistent IDE noFS]
+    FS --> SH
+    K --> TASK[Cooperative / PIT-preempted kernel tasks]
+    SH --> ELF[Validated ELF32 loader]
+    ELF --> USER[Ring 3 / TSS / private paging]
+    USER --> SYS[Checked INT 80h syscalls]
+    SYS --> K
 ```
 
 The kernel is linked as a flat binary at `0x10000`. NASM includes small modules

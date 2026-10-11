@@ -80,6 +80,8 @@ runs. Thirty corrupted ELF fixtures cover class/endianness/ABI/type/machine,
 header/table sizes, counts/offset overflow, unsupported segment types, alignment,
 file/memory bounds, W+X, non-executable/out-of-range entry and overlapping pages.
 Each rejection leaves a responsive shell and unchanged allocation count.
+Host `objdump -p build/checks.elf` independently identifies elf32-i386 and its
+actual RX/RW LOAD offsets, addresses, sizes and 4 KiB alignment.
 
 The `bench` command performs 100,000 real frame allocation/free pairs. Memory
 tests verify unchanged frame counts afterward at all four RAM sizes. PIT tick
