@@ -1,4 +1,5 @@
 import re
+import struct
 from qemu import Machine
 
 previous = 0
@@ -20,4 +21,18 @@ for memory in ("16M", "64M", "128M", "256M"):
         assert free + used == managed
         count = int.from_bytes(machine.memory(0x4ff0, 2), "little")
         assert 0 < count <= 128
+        records = list(struct.iter_unpack("<QQII", machine.memory(0x5000, count * 24)))
+        actual_usable = sum(length for _, length, kind, _ in records if kind == 1) // 1024
+        assert usable == actual_usable
+        eligible = set()
+        for base, length, kind, _ in records:
+            if kind == 1:
+                eligible.update(range(max(256, (base + 4095) // 4096),
+                                      min(32768, (base + length) // 4096)))
+        for base, length, kind, _ in records:
+            if kind != 1:
+                eligible.difference_update(range(base // 4096,
+                                                min(32768, (base + length + 4095) // 4096)))
+        assert managed == len(eligible)
+        assert used == 33
         print(f"PASS: {memory} E820={usable}KiB, managed={managed}, free={free}, used={used}")

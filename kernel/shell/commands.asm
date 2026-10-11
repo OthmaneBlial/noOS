@@ -83,6 +83,35 @@ hex_digit:
     stc
     ret
 command_panic:
+    cmp byte [esi], 0
+    je .opcode
+    mov edi, panic_page
+    call string_equal
+    test eax, eax
+    jnz .page
+    mov edi, panic_gp
+    call string_equal
+    test eax, eax
+    jnz .gp
+    mov edi, panic_divide
+    call string_equal
+    test eax, eax
+    jnz .divide
+    mov esi, panic_usage
+    jmp console_puts
+.page:
+    mov eax, [0]
+    ret
+.gp:
+    mov ax, 0x18
+    mov ds, ax
+    ret
+.divide:
+    xor eax, eax
+    xor edx, edx
+    div eax
+    ret
+.opcode:
     ud2                       ; real invalid-opcode exception, not a printed mock panic
 command_halt:
     mov esi, halt_text
@@ -158,7 +187,7 @@ command_table:
     dd color_name, command_color, 1, color_help
     dd reboot_name, command_reboot, 0, reboot_name
     dd halt_name, command_halt, 0, halt_name
-    dd panic_name, command_panic, 0, panic_name
+    dd panic_name, command_panic, 1, panic_help
     dd mem_name, command_mem, 0, mem_name
     dd 0,0,0,0
 help_name db 'help',0
@@ -171,6 +200,11 @@ color_name db 'color',0
 reboot_name db 'reboot',0
 halt_name db 'halt',0
 panic_name db 'panic',0
+panic_page db 'page',0
+panic_gp db 'gp',0
+panic_divide db 'divide',0
+panic_help db 'panic [page|gp|divide]',0
+panic_usage db 'Usage: panic [page|gp|divide]',10,0
 mem_name db 'mem',0
 mem_e820 db 'E820 usable KiB: ',0
 mem_managed db 'Managed usable frames: ',0

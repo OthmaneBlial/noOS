@@ -36,6 +36,7 @@ test: all
 	$(PYTHON) tests/test_keyboard.py
 	$(PYTHON) tests/test_shell.py
 	$(PYTHON) tests/test_memory.py
+	$(PYTHON) tests/test_paging.py
 
 size: all
 	$(PYTHON) tools/image.py size

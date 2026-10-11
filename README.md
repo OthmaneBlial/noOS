@@ -7,7 +7,7 @@ to a protected-mode Assembly kernel. QEMU tests verify BIOS loading, A20,
 32-bit entry, VGA output, PS/2 interrupts and an interactive editing shell.
 
 <!-- progress:start -->
-## Roadmap — 57.5%
+## Roadmap — 60%
 
 Progress counts verified gates, including the advanced roadmap. Planned work earns no credit.
 
@@ -17,7 +17,7 @@ Progress counts verified gates, including the advanced roadmap. Planned work ear
 | 2. VGA terminal | 5/5 |
 | 3. Interrupt-driven PS/2 keyboard | 5/5 |
 | 4. Interactive shell | 4/5 |
-| 5. Memory management | 4/5 |
+| 5. Memory management | 5/5 |
 | 6. Hardware and diagnostics | 0/5 |
 | 7. Advanced kernel | 0/5 |
 | 8. Professional delivery | 0/5 |

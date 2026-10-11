@@ -8,6 +8,7 @@ kernel_main:
     call pmm_selftest
     call heap_init
     call heap_selftest
+    call paging_init
     call keyboard_init
     mov esi, keyboard_ready
     call console_puts
