@@ -48,6 +48,7 @@ test: all
 	$(PYTHON) tests/test_debug.py
 	$(PYTHON) tests/test_initrd.py
 	$(PYTHON) tests/test_filesystem.py
+	$(PYTHON) tests/test_tasks.py
 	$(PYTHON) tools/progress.py --check
 
 size: all

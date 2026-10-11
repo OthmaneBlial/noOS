@@ -266,6 +266,7 @@ command_table:
     dd touch_name, command_touch, 1, touch_help
     dd write_name, command_write, 1, write_help
     dd rm_name, command_rm, 1, rm_help
+    dd ps_name, command_ps, 0, ps_name
     dd 0,0,0,0
 help_name db 'help',0
 clear_name db 'clear',0
@@ -296,6 +297,7 @@ mkdir_name db 'mkdir',0
 touch_name db 'touch',0
 write_name db 'write',0
 rm_name db 'rm',0
+ps_name db 'ps',0
 mkdir_help db 'mkdir NAME',0
 touch_help db 'touch NAME',0
 write_help db 'write FILE [TEXT] (replace)',0

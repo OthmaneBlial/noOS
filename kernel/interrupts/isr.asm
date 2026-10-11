@@ -12,15 +12,18 @@ isr_common:
     cld
     pushad
     mov eax, [esp+32]
+    cmp eax, 48
+    je task_schedule
     cmp eax, 32
-    jb .exception
+    jb isr_exception
     cmp eax, 47
-    ja .exception
+    ja isr_exception
     call irq_dispatch
+isr_restore:
     popad
     add esp, 8
     iretd
-.exception:
+isr_exception:
     mov ebx, [esp+36]
     mov edx, [esp+40]
     jmp panic_exception

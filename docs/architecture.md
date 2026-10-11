@@ -126,6 +126,20 @@ contain 1–31 printable ASCII characters without whitespace/slash. `write`
 replaces an existing file with remaining line text. `rm` refuses nonempty
 directories. `/initrd` remains read-only and does not consume a noFS slot.
 
+## Cooperative tasks
+
+Three ring-0 task control blocks track saved interrupt-frame ESP, ready state,
+work, switches, IRQ ticks and name. The shell uses its original kernel stack;
+each worker has a distinct reserved 4 KiB kernel stack. Software INT 30h enters
+the same normalized context layout as hardware interrupts. With IF masked,
+round robin stores the current ESP and restores a ready task's saved frame
+through IRETD. Worker termination clears its ready bit before yielding.
+
+The boot test runs two independent workers to completion and checks counters,
+register preservation and return to the shell. `ps` reports the real blocks.
+This is kernel threading; there is no user privilege or address-space isolation.
+Timer-driven preemption is the next step after this verified context mechanism.
+
 - [Intel system programming manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 - [QEMU system invocation](https://www.qemu.org/docs/master/system/qemu-manpage.html)
 - [QMP reference](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html)

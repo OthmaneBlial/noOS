@@ -55,6 +55,7 @@ halts the guest CPU, while `reboot` restarts the guest.
 | `sysinfo` | Kernel, paging, CPU, memory, timer and keyboard IRQ statistics |
 | `ls`, `cat FILE`, `pwd`, `cd DIR` | Writable noFS root and read-only `/initrd` mount |
 | `mkdir NAME`, `touch NAME`, `write FILE [TEXT]`, `rm NAME` | Real IDE disk files; write replaces contents; rm accepts empty directories |
+| `ps` | Real ring-0 task states, work counters and context switches |
 | `reboot`, `halt` | Hardware reset or interrupt-disabled CPU halt |
 | `panic [page\|gp\|divide]` | Real CPU fault with vector, error code, EIP and CR2 when applicable |
 
@@ -180,7 +181,8 @@ interrupts, bounding asynchronous input, preserving exception error frames,
 and mapping live stacks and hardware before enabling CR0.PG. Tests exercise
 these boundaries instead of treating successful assembly as a boot proof.
 
-Tasks, ring 3, syscalls and ELF executables are still pending.
+Cooperative task switching with separate stacks is tested. Timer preemption,
+ring 3, syscalls and ELF executables are still pending.
 There is no userspace isolation or physical-hardware compatibility
 claim. Contributions should start with a reproducible failure or a scoped
 roadmap gate; see [CONTRIBUTING.md](CONTRIBUTING.md).

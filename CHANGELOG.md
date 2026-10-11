@@ -12,6 +12,8 @@
 - Public showcase and field manual at https://othmaneblial.github.io/noOS/.
 - Persistent IDE PIO noFS, directories and bounded file writes, dual checked
   metadata/data banks, raw-sector/persistence/corruption tests and clean-safe data.
+- Cooperative ring-0 tasks with saved interrupt contexts, separate stacks,
+  round-robin switching, controlled completion and ps status.
 
 Foundation measurement: stage1 512 bytes, stage2 641 bytes, kernel 27,704 bytes,
 raw sector-padded image 32,768 bytes. Run `make size` for current source.
