@@ -1,0 +1,2 @@
+# Preserve license text while storing portable LF line endings.
+site/fonts/*-OFL.txt text eol=lf
