@@ -5,19 +5,15 @@ kernel_entry:
     mov esp, 0x90000
     cld
     call serial_init
+    call vga_init
     mov esi, hello
-    call serial_puts
-    mov edi, 0xb8000
-    mov esi, hello
-.print:
-    lodsb
-    test al, al
-    jz .halt
-    mov ah, 0x0b
-    stosw
-    jmp .print
+    call console_puts
+    call kernel_main
 .halt:
     hlt
     jmp .halt
 hello db '[OK] Protected mode activated | noOS kernel entry',10,0
 %include "kernel/drivers/serial.asm"
+%include "kernel/drivers/vga.asm"
+%include "kernel/lib/conversion.asm"
+%include "kernel/main.asm"
